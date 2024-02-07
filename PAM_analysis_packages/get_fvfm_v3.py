@@ -85,10 +85,10 @@ def main():
         ## For each well in the well_coordinate file, compute fvfm
         print("Analysing each specified Well in the plate, based on the well coordinate file...")
         for key in wells.keys():
-            df = get_fvfm_per_well(image_file, key, thresh, fmax_plate)
+            df, well_thresh_image = get_fvfm_per_well(image_file, key, thresh, fmax_plate)
             output_df = pd.concat([output_df, df])
             # Export threshold images to debug folder
-            cv2.imwrite(f"{debug_cropped}/threshold/{image_file}_threshold_{key}.tif", threshold_image)
+            cv2.imwrite(f"{debug_cropped}/threshold/{image_file}_threshold_{key}.tif", well_thresh_image)
     output_df = output_df.reset_index().drop(columns="index")
     output_df.to_csv(f"{outpath}/FvFm_output.csv")
 
@@ -196,7 +196,7 @@ def get_fvfm_per_well(image_file, key, thresh, fmax_plate):
     if math.isnan(part_Fv):
         print(f"fvfm for {image_file}, {key} is nan!")
     df = pd.DataFrame([[image_file, key, part_Fv]], columns = ["Plate", "Well", "FvFm"])
-    return df
+    return df, threshold_image
 
 if __name__ == '__main__':
     main()
