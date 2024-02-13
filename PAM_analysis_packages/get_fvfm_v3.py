@@ -67,8 +67,12 @@ def main():
     ##### Read well_coord file, and convert to dictionary (Well_1: [coord1,coord2,coord3,coord4])
     # Note: Please check at the end of the data extraction process, that all the leaf area (and none from neighbouring wells) has been successfully captured.
     wells = pd.read_csv(well_coord, sep = ",").to_dict(orient = "list")
-    if coord_format == "imagej":
+    ## Check the format of the well coordinates
+    if (coord_format == 'auto' and is_imageJ_coord(wells) == True) or (coord_format == 'imagej'):
+        print("Converting input coordinates to PlantCV-formatted coordinates.")
         wells = convert2plantcv(wells)
+    elif (coord_format == 'auto' and is_imageJ_coord(wells) == False) or (coord_format == 'plantcv'):
+        print("Treating input coordinates as PlantCV-formatted coordinates.")
 
     ##### Analyse images and compute fvfm
     # Create output pandas df
@@ -112,9 +116,15 @@ def parsing_arguments():
     parser.add_argument('--outpath',
                         help="Path to output directory which will contain results of current run.", default=f"./output_{timestamp}/")
     parser.add_argument('--well-coord', 
-                        help = "CSV file containing the well coordinates. The columns should be the Well names (well_1, well_2 etc), and the rows contain the coordinates (x1,y1,x2,y2). If format is imagej, specify in coord_format option.", 
-                        default = "./input/24_wells_transposed.csv")
-    parser.add_argument('--coord-format', default = "plantcv", help = "other option is imagej")
+                        help = """
+                        CSV file containing the well coordinates. The columns should be the Well names (well_1, well_2 etc), and the rows contain the coordinates (x1,y1,x2,y2). If format is imagej, specify in coord_format option.", 
+                        default = "./input/24_wells_transposed.csv
+                        """)
+    parser.add_argument('--coord-format', default = "auto", help = """
+                        Format of well coordinates. ImageJ sees Well coordinates as:  [100, 130, 70, 70]  , corresponding to [x_start, y_start, x_width, y_width].
+                        PlantCV sees Well coordinates as: [100, 130, 170, 200], corresponding to [x_start, y_start, x_end, y_end]. 
+                        By default, it will try to detect the format ('auto'), but can be set to 'plantcv' or 'imagej' (case-sensitive).
+                        """)
     parser.add_argument('--threshold', default = "yen", 
                         help = "Threshold to define plant material from background. Default is Yen's threshold, as defined by Mister Yen.")
     args = vars(parser.parse_args())
@@ -145,8 +155,36 @@ def check_dirs():
         os.makedirs(f"{outpath}/threshold_output/")
     ###########################################
 
-def convert2plantcv(well_coord):
-    return
+def is_imageJ_coord(csv_dict):
+    """
+    is_imageJ_coord will try to automatically detect the format of the input well coordinates. To do this, it assumes that all wells have equal widths. 
+    Therefore, it simply checks whether the last 2 elements of each Well_coord array are always the same. If so, returns True, else returns False.
+    """
+    csv_df = pd.DataFrame.from_dict(csv_dict, orient = 'columns')
+    x_end = np.unique(csv_df.loc[2])
+    y_end = np.unique(csv_df.loc[3])
+    print(f"x_end has {len(x_end)} values, and y_end has {len(y_end)} values.")
+    if (len(x_end) == 1) and (len(y_end) == 1):
+        print("Detected ImageJ format for well coordinates.")
+        return True
+    else:
+        print("Detected coordinate format different from ImageJ.")
+        return False
+
+def convert2plantcv(csv_dict):
+    """
+    Convert2plantcv is a function that will transform the Plate Well coordinates from the ImageJ format, to the one that PlantCV uses. 
+    ImageJ sees Well coordinates as:  [100, 130, 70, 70]  , corresponding to [x_start, y_start, x_width, y_width].
+    PlantCV sees Well coordinates as: [100, 130, 170, 200], corresponding to [x_start, y_start, x_end, y_end]. 
+    This script will be able to take in both types of coordinates, but if the format is ImageJ, it will convert the data to a PlantCV compatible format. 
+    """
+    plantcv_coord = {}
+    for key, value in csv_dict.items():
+        x_start = value[0]; y_start = value[1]; x_width = value[2]; y_width = value[3]
+        plantcv_coord[key] = [x_start, y_start, x_start+x_width, y_start+y_width]
+        # print(f"{key}: {csv_dict[key]}")
+        # print(f"{key}: {new_dict[key]}")
+    return plantcv_coord
 
 def generate_threshold_image(tif_dir, image_file, thresh):
     # Create contrast image and save to output/threshold_output folder
