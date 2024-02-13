@@ -58,7 +58,7 @@ def main():
     subprocess.check_call(["./scripts/pim2tiff.exe", f"{xpim_dir}"])
 
     ##### Move tif files to the input/tif_files folder
-    [shutil.move(f"{xpim_dir}/{bn}.xpim", f"{tif_dir}/{bn}.tif") for bn in xpim_bn]
+    [shutil.move(f"{xpim_dir}/{bn}.tif", f"{tif_dir}/{bn}.tif") for bn in xpim_bn]
 
     ##### Separate the tif stacks in to individual images
     for tif_stack in glob.glob("./input/tif_files/*.tif"):
