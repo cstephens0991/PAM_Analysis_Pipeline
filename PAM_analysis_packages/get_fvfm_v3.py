@@ -55,7 +55,7 @@ def main():
 
     ##### Convert xpim files to tif files. This utilises the "pim2tif.exe" executable.
     # this executes pim2tiff.exe (only for windows), and creates several tif files (tif stack)
-    #subprocess.check_call(["./scripts/pim2tiff.exe", f"{xpim_dir}"])
+    subprocess.check_call(["./scripts/pim2tiff.exe", f"{xpim_dir}"])
 
     ##### Move tif files to the input/tif_files folder
     [shutil.move(f"{xpim_dir}/{bn}.xpim", f"{tif_dir}/{bn}.tif") for bn in xpim_bn]
@@ -117,9 +117,11 @@ def parsing_arguments():
                         help="Path to output directory which will contain results of current run.", default=f"./output_{timestamp}/")
     parser.add_argument('--well-coord', 
                         help = """
-                        CSV file containing the well coordinates. The columns should be the Well names (well_1, well_2 etc), and the rows contain the coordinates (x1,y1,x2,y2). If format is imagej, specify in coord_format option.", 
-                        default = "./input/24_wells_transposed.csv
-                        """)
+                        CSV file containing the well coordinates. The columns should be the Well names (well_1, well_2 etc), and the rows contain the coordinates (x1,y1,x2,y2). 
+                        If format is imagej, specify in coord_format option.
+                        """, 
+                        default = "./input/24_wells_transposed.csv"
+                        )
     parser.add_argument('--coord-format', default = "auto", help = """
                         Format of well coordinates. ImageJ sees Well coordinates as:  [100, 130, 70, 70]  , corresponding to [x_start, y_start, x_width, y_width].
                         PlantCV sees Well coordinates as: [100, 130, 170, 200], corresponding to [x_start, y_start, x_end, y_end]. 
@@ -186,7 +188,7 @@ def convert2plantcv(csv_dict):
         # print(f"{key}: {new_dict[key]}")
     return plantcv_coord
 
-def generate_threshold_image(tif_dir, image_file, thresh):
+def generate_threshold_image(image_file, thresh):
     # Create contrast image and save to output/threshold_output folder
     #fmin_plate, path, filename = pcv.readimage(f"{tif_dir}/tif_frames/{image_file}-1.tif", mode = "native")
     fmax_plate, _, _ = pcv.readimage(f"{tif_dir}/tif_frames/{image_file}-2.tif", mode = "native")
