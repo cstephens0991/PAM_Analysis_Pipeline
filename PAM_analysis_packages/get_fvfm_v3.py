@@ -41,6 +41,7 @@ import cv2 as cv2
 def main():
     ## set global variables
     global debug_cropped
+    debug_cropped = "./debug/cropped_images"
     global xpim_dir
     global tif_dir
     global outpath
@@ -84,7 +85,7 @@ def main():
     for image_file in xpim_bn:
         print(f"Analysing {image_file}")
         file_count = file_count + 1
-        fmax_plate, threshold_image = generate_threshold_image(tif_dir, image_file, thresh, outpath)
+        fmax_plate, threshold_image = generate_threshold_image(image_file, thresh)
 
         ## For each well in the well_coordinate file, compute fvfm
         print("Analysing each specified Well in the plate, based on the well coordinate file...")
@@ -147,7 +148,6 @@ def check_dirs():
         shutil.rmtree(f"{tif_dir}/tif_frames/")
     os.makedirs(f"{tif_dir}/tif_frames/")
     # Delete any previously existing debug folder and replace with empty directories
-    debug_cropped = "./debug/cropped_images"
     if os.path.exists(debug_cropped):
         shutil.rmtree(debug_cropped)
     subdirs = ["fmin", "fmax", "fdark", "threshold"]

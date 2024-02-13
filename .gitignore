@@ -1,0 +1,11 @@
+
+
+# ignore all logs
+logfiles/*
+
+# ignore output files
+PAM_analysis_packages/output_*/
+
+# ignore debug_cropped directory
+PAM_analysis_packages/debug/
+
