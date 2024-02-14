@@ -110,26 +110,28 @@ def parsing_arguments():
     parser = argparse.ArgumentParser(
         prog='get_fvfm_v3.py',
         description='This script is used to carry out the first stage of the PAM data analysis pipeline.')
-    parser.add_argument('--xpim-dir',
-                        help="Path to directory containing the *.xpim files.", default = "./input/xpim_files/")
-    parser.add_argument('--tif-dir',
-                        help="Path to directory containing the *.tif files.", default = "./input/tif_files/")
-    parser.add_argument('--outpath',
-                        help="Path to output directory which will contain results of current run.", default=f"./output_{timestamp}/")
-    parser.add_argument('--well-coord', 
-                        help = """
+    parser.add_argument('--xpim-dir', default = "./input/xpim_files/",
+                        help="Path to directory containing the *.xpim files. [default = './input/xpim_files/']")
+    parser.add_argument('--tif-dir', default = "./input/tif_files/",
+                        help="Path to directory containing the *.tif files. [default = './input/tif_files/']")
+    parser.add_argument('--outpath', default=f"./output_{timestamp}/",
+                        help=f"Path to output directory which will contain results of current run. [default = './output_{timestamp}']")
+    parser.add_argument('--well-coord', default = "./input/24_wells_transposed.csv",
+                        help = 
+                        """
                         CSV file containing the well coordinates. The columns should be the Well names (well_1, well_2 etc), and the rows contain the coordinates (x1,y1,x2,y2). 
-                        If format is imagej, specify in coord_format option.
-                        """, 
-                        default = "./input/24_wells_transposed.csv"
+                        If format is imagej, specify in coord_format option. [default = './input/24_wells_transposed.csv']
+                        """
                         )
-    parser.add_argument('--coord-format', default = "auto", help = """
+    parser.add_argument('--coord-format', default = "auto", help = 
+                        """
                         Format of well coordinates. ImageJ sees Well coordinates as:  [100, 130, 70, 70]  , corresponding to [x_start, y_start, x_width, y_width].
                         PlantCV sees Well coordinates as: [100, 130, 170, 200], corresponding to [x_start, y_start, x_end, y_end]. 
                         By default, it will try to detect the format ('auto'), but can be set to 'plantcv' or 'imagej' (case-sensitive).
+                        [default = 'auto']
                         """)
     parser.add_argument('--threshold', default = "yen", 
-                        help = "Threshold to define plant material from background. Default is Yen's threshold, as defined by Mister Yen.")
+                        help = "Threshold to define plant material from background. Default is Yen's threshold, as defined by Yen et al 1995 (10.1109/83.366472). [default = 'yen']")
     args = vars(parser.parse_args())
     xpim_dir = os.path.abspath(args["xpim_dir"])
     tif_dir = os.path.abspath(args["tif_dir"])
@@ -140,6 +142,9 @@ def parsing_arguments():
     return xpim_dir, tif_dir, outpath, well_coord, coord_format, threshold
 
 def check_dirs():
+    """
+    check_dirs will simply check whether necessary directories already exist. If they do, they are removed and recreated. If they don't, they are created.
+    """
     ######## Take care of directories #########
     if not os.path.exists(tif_dir):
         os.makedirs(tif_dir)
@@ -189,6 +194,11 @@ def convert2plantcv(csv_dict):
     return plantcv_coord
 
 def generate_threshold_image(image_file, thresh):
+    """
+    generate_threshold_image takes in the tif_file and the threshold (default being yen's threshold). 
+    Using PlantCV, it reads the image and extracts 'fmax_plate', then creates a thresholded image (returns 'threshold_image'). 
+    It also writes the 'threshold_image' to the outpath/threshold_output/xxx.tif. 
+    """
     # Create contrast image and save to output/threshold_output folder
     #fmin_plate, path, filename = pcv.readimage(f"{tif_dir}/tif_frames/{image_file}-1.tif", mode = "native")
     fmax_plate, _, _ = pcv.readimage(f"{tif_dir}/tif_frames/{image_file}-2.tif", mode = "native")
@@ -203,6 +213,14 @@ def generate_threshold_image(image_file, thresh):
     return fmax_plate, threshold_image
 
 def get_fvfm_per_well(image_file, key, thresh, fmax_plate):
+    """
+    get_fvfm_per_well takes in the tif_file (image_file), the threshold (default = yen), the fmax_plate, and the Well_number (key). 
+    'image_file' is actually the basename for the tif_stack (imagefile-1, imagefile-2 and imagefile-3.tif). 
+    imagefile-1.tif, imagefile-2.tif and imagefile-3.tif are opened using Image (PIL package), cropped to the current Well coordinates, and cropped image is saved (named as 'fmin', 'fmax', and 'fdark', respectively). 
+    Then with PlantCV, cropped images are read and 'fmin', 'fmax' and 'fdark' are extracted from corresponding images. 
+    Threshold value is used to filter out highlighted plate areas, and 'threshold_image' is created.
+    FvFm values are calculated and a DataFrame with these values is returned. 
+    """
     # Create images for each well
     # For each plate image, the image is opened, cropped and the cropped image is saved
     with Image.open(f"{tif_dir}/tif_frames/{image_file}-1.tif") as plate_fmin:
