@@ -21,11 +21,11 @@ import subprocess
 import cv2 as cv2
 
 # Import functions for FvFm analysis (extract FvFm), tif_stack to single frames, converting imageJ_coord to plantcv, and check if coord are imageJ format or not.
-from scripts.is_imageJ_coord import is_imageJ_coord
-from scripts.Multi2Singleframes import extract_frames
-from scripts.convert2plantcv import convert2plantcv
-from scripts.get_fvfm_per_well import get_fvfm_per_well
-from scripts.generate_threshold_image import generate_threshold_image
+# from scripts.check_coord_format import is_imageJ, convert2plantcv
+# from scripts.Multi2Singleframes import extract_frames
+# from scripts.get_fvfm_mod import get_fvfm_per_well
+# from scripts.threshold_image_mod import generate_threshold_image
+from helper import is_imageJ, convert2plantcv, extract_frames, get_fvfm_per_well, generate_threshold_image
 
 # Import a python file with global variables
 from scripts.globvar import GlobVar
@@ -55,10 +55,10 @@ def main():
     # Note: Please check at the end of the data extraction process, that all the leaf area (and none from neighbouring wells) has been successfully captured.
     GlobVar.wells = pd.read_csv(well_coord, sep = ",").to_dict(orient = "list")
     ## Check the format of the well coordinates
-    if (coord_format == 'auto' and is_imageJ_coord(GlobVar.wells) == True) or (coord_format == 'imagej'):
+    if (coord_format == 'auto' and is_imageJ(GlobVar.wells) == True) or (coord_format == 'imagej'):
         print("Converting input coordinates to PlantCV-formatted coordinates.")
-        wells = convert2plantcv(GlobVar.wells)
-    elif (coord_format == 'auto' and is_imageJ_coord(GlobVar.wells) == False) or (coord_format == 'plantcv'):
+        GlobVar.wells = convert2plantcv(GlobVar.wells)
+    elif (coord_format == 'auto' and is_imageJ(GlobVar.wells) == False) or (coord_format == 'plantcv'):
         print("Treating input coordinates as PlantCV-formatted coordinates.")
 
     ##### Analyse images and compute fvfm
@@ -147,100 +147,6 @@ def check_dirs():
     if not os.path.exists(f"{GlobVar.outpath}/threshold_output/"):
         os.makedirs(f"{GlobVar.outpath}/threshold_output/")
     ###########################################
-
-# def is_imageJ_coord(csv_dict):
-#     '''
-#     is_imageJ_coord will try to automatically detect the format of the input well coordinates. To do this, it assumes that all wells have equal widths. 
-#     Therefore, it simply checks whether the last 2 elements of each Well_coord array are always the same. If so, returns True, else returns False.
-#     '''
-#     csv_df = pd.DataFrame.from_dict(csv_dict, orient = 'columns')
-#     x_end = np.unique(csv_df.loc[2])
-#     y_end = np.unique(csv_df.loc[3])
-#     if (len(x_end) == 1) and (len(y_end) == 1):
-#         print("Detected ImageJ format for well coordinates.")
-#         return True
-#     else:
-#         print("Detected coordinate format different from ImageJ.")
-#         return False
-
-# def convert2plantcv(csv_dict):
-#     """
-#     Convert2plantcv is a function that will transform the Plate Well coordinates from the ImageJ format, to the one that PlantCV uses. 
-#     ImageJ sees Well coordinates as:  [100, 130, 70, 70]  , corresponding to [x_start, y_start, x_width, y_width].
-#     PlantCV sees Well coordinates as: [100, 130, 170, 200], corresponding to [x_start, y_start, x_end, y_end]. 
-#     This script will be able to take in both types of coordinates, but if the format is ImageJ, it will convert the data to a PlantCV compatible format. 
-#     """
-#     plantcv_coord = {}
-#     for key, value in csv_dict.items():
-#         x_start = value[0]; y_start = value[1]; x_width = value[2]; y_width = value[3]
-#         plantcv_coord[key] = [x_start, y_start, x_start+x_width, y_start+y_width]
-#         # print(f"{key}: {csv_dict[key]}")
-#         # print(f"{key}: {new_dict[key]}")
-#     return plantcv_coord
-
-# def generate_threshold_image(image_file, thresh):
-#     """
-#     generate_threshold_image takes in the tif_file and the threshold (default being yen's threshold). 
-#     Using PlantCV, it reads the image and extracts 'fmax_plate', then creates a thresholded image (returns 'threshold_image'). 
-#     It also writes the 'threshold_image' to the outpath/threshold_output/xxx.tif. 
-#     """
-#     # Create contrast image and save to output/threshold_output folder
-#     #fmin_plate, path, filename = pcv.readimage(f"{tif_dir}/tif_frames/{image_file}-1.tif", mode = "native")
-#     fmax_plate, _, _ = pcv.readimage(f"{globvar.tif_dir}/tif_frames/{image_file}-2.tif", mode = "native")
-#     #fdark_plate, path, filename = pcv.readimage(f"{tif_dir}/tif_frames/{image_file}-3.tif", mode = "native")
-#     if thresh == "yen":
-#         threshold_lvl = filters.threshold_yen(image=fmax_plate)
-#     else:
-#         threshold_lvl = thresh
-#     threshold_image = pcv.threshold.binary(gray_img = fmax_plate, threshold = threshold_lvl, object_type = 'light')
-#     threshold_image = pcv.fill(threshold_image, size = 5)
-#     cv2.imwrite(f"{globvar.outpath}/threshold_output/{image_file}_threshold_image.tif", threshold_image)
-#     return fmax_plate, threshold_image
-
-# def get_fvfm_per_well(image_file, key, thresh, fmax_plate):
-#     """
-#     get_fvfm_per_well takes in the tif_file (image_file), the threshold (default = yen), the fmax_plate, and the Well_number (key). 
-#     'image_file' is actually the basename for the tif_stack (imagefile-1, imagefile-2 and imagefile-3.tif). 
-#     imagefile-1.tif, imagefile-2.tif and imagefile-3.tif are opened using Image (PIL package), cropped to the current Well coordinates, and cropped image is saved (named as 'fmin', 'fmax', and 'fdark', respectively). 
-#     Then with PlantCV, cropped images are read and 'fmin', 'fmax' and 'fdark' are extracted from corresponding images. 
-#     Threshold value is used to filter out highlighted plate areas, and 'threshold_image' is created.
-#     FvFm values are calculated and a DataFrame with these values is returned. 
-#     """
-#     # Create images for each well
-#     # For each plate image, the image is opened, cropped and the cropped image is saved
-#     with Image.open(f"{globvar.tif_dir}/tif_frames/{image_file}-1.tif") as plate_fmin:
-#         cropped_fmin = plate_fmin.crop(globvar.wells[key])
-#         cropped_fmin.save(f"{globvar.debug_cropped}/fmin/{image_file}_fmin_{key}.tif", format=None)
-        
-#     with Image.open(f"{globvar.tif_dir}/tif_frames/{image_file}-2.tif") as plate_fmax:
-#         cropped_fmax = plate_fmax.crop(globvar.wells[key])
-#         cropped_fmax.save(f"{globvar.debug_cropped}/fmax/{image_file}_fmax_{key}.tif", format=None)
-        
-#     with Image.open(f"{globvar.tif_dir}/tif_frames/{image_file}-3.tif") as plate_fdark:
-#         cropped_fdark = plate_fdark.crop(globvar.wells[key])
-#         cropped_fdark.save(f"{globvar.debug_cropped}/fdark/{image_file}_fdark_{key}.tif", format=None)
-    
-#     # Read back in using pcv functions (reads in images as numpy arrays)
-#     fmin, _, _ = pcv.readimage(f"{globvar.debug_cropped}/fmin/{image_file}_fmin_{key}.tif", mode="native")
-#     fmax, _, _ = pcv.readimage(f"{globvar.debug_cropped}/fmax/{image_file}_fmax_{key}.tif", mode="native")
-#     fdark, _, _ = pcv.readimage(f"{globvar.debug_cropped}/fdark/{image_file}_fdark_{key}.tif", mode="native")
-
-#     # Return threshold value based on Yen’s method.
-#     if thresh == "yen":
-#         threshold_lvl = filters.threshold_yen(image=fmax_plate)
-#     else:
-#         threshold_lvl = thresh
-#     # Use the threshold value to filter out highlighted plate areas
-#     threshold_image = pcv.threshold.binary(gray_img=fmax, threshold=threshold_lvl, object_type='light')
-#     threshold_image = pcv.fill(threshold_image, size=5)
-
-#     # Carry out FvFm calculation
-#     part_Fv = Analyse_FvFm_new.analyze_fvfm(fdark=fdark, fmin=fmin, fmax=fmax, mask=threshold_image, bins=256, label="fluor")
-#     if math.isnan(part_Fv):
-#         print(f"fvfm for {image_file}, {key} is nan!")
-#     df = pd.DataFrame([[image_file, key, part_Fv]], columns = ["Plate", "Well", "FvFm"])
-#     return df, threshold_image
-
 
 if __name__ == '__main__':
     main()
