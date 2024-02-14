@@ -4,9 +4,8 @@ from scripts import Analyse_FvFm_new
 from skimage import filters
 from plantcv import plantcv as pcv
 from PIL import Image
-from scripts import globvar
 
-def get_fvfm_per_well(image_file, key, thresh, fmax_plate):
+def get_fvfm_per_well(image_file, key, thresh, fmax_plate, GlobVar):
     """
     get_fvfm_per_well takes in the tif_file (image_file), the threshold (default = yen), the fmax_plate, and the Well_number (key). 
     'image_file' is actually the basename for the tif_stack (imagefile-1, imagefile-2 and imagefile-3.tif). 
@@ -17,22 +16,22 @@ def get_fvfm_per_well(image_file, key, thresh, fmax_plate):
     """
     # Create images for each well
     # For each plate image, the image is opened, cropped and the cropped image is saved
-    with Image.open(f"{globvar.tif_dir}/tif_frames/{image_file}-1.tif") as plate_fmin:
-        cropped_fmin = plate_fmin.crop(globvar.wells[key])
-        cropped_fmin.save(f"{globvar.debug_cropped}/fmin/{image_file}_fmin_{key}.tif", format=None)
+    with Image.open(f"{GlobVar.tif_dir}/tif_frames/{image_file}-1.tif") as plate_fmin:
+        cropped_fmin = plate_fmin.crop(GlobVar.wells[key])
+        cropped_fmin.save(f"{GlobVar.debug}/fmin/{image_file}_fmin_{key}.tif", format=None)
         
-    with Image.open(f"{globvar.tif_dir}/tif_frames/{image_file}-2.tif") as plate_fmax:
-        cropped_fmax = plate_fmax.crop(globvar.wells[key])
-        cropped_fmax.save(f"{globvar.debug_cropped}/fmax/{image_file}_fmax_{key}.tif", format=None)
+    with Image.open(f"{GlobVar.tif_dir}/tif_frames/{image_file}-2.tif") as plate_fmax:
+        cropped_fmax = plate_fmax.crop(GlobVar.wells[key])
+        cropped_fmax.save(f"{GlobVar.debug}/fmax/{image_file}_fmax_{key}.tif", format=None)
         
-    with Image.open(f"{globvar.tif_dir}/tif_frames/{image_file}-3.tif") as plate_fdark:
-        cropped_fdark = plate_fdark.crop(globvar.wells[key])
-        cropped_fdark.save(f"{globvar.debug_cropped}/fdark/{image_file}_fdark_{key}.tif", format=None)
+    with Image.open(f"{GlobVar.tif_dir}/tif_frames/{image_file}-3.tif") as plate_fdark:
+        cropped_fdark = plate_fdark.crop(GlobVar.wells[key])
+        cropped_fdark.save(f"{GlobVar.debug}/fdark/{image_file}_fdark_{key}.tif", format=None)
     
     # Read back in using pcv functions (reads in images as numpy arrays)
-    fmin, _, _ = pcv.readimage(f"{globvar.debug_cropped}/fmin/{image_file}_fmin_{key}.tif", mode="native")
-    fmax, _, _ = pcv.readimage(f"{globvar.debug_cropped}/fmax/{image_file}_fmax_{key}.tif", mode="native")
-    fdark, _, _ = pcv.readimage(f"{globvar.debug_cropped}/fdark/{image_file}_fdark_{key}.tif", mode="native")
+    fmin, _, _ = pcv.readimage(f"{GlobVar.debug}/fmin/{image_file}_fmin_{key}.tif", mode="native")
+    fmax, _, _ = pcv.readimage(f"{GlobVar.debug}/fmax/{image_file}_fmax_{key}.tif", mode="native")
+    fdark, _, _ = pcv.readimage(f"{GlobVar.debug}/fdark/{image_file}_fdark_{key}.tif", mode="native")
 
     # Return threshold value based on Yen’s method.
     if thresh == "yen":

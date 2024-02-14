@@ -21,39 +21,44 @@ import subprocess
 import cv2 as cv2
 
 # Import functions for FvFm analysis (extract FvFm), tif_stack to single frames, converting imageJ_coord to plantcv, and check if coord are imageJ format or not.
-from scripts import Multi2Singleframes, convert2plantcv, is_imageJ_coord, get_fvfm_per_well, generate_threshold_image
+from scripts.is_imageJ_coord import is_imageJ_coord
+from scripts.Multi2Singleframes import extract_frames
+from scripts.convert2plantcv import convert2plantcv
+from scripts.get_fvfm_per_well import get_fvfm_per_well
+from scripts.generate_threshold_image import generate_threshold_image
 
 # Import a python file with global variables
-from scripts import globvar
+from scripts.globvar import GlobVar
 
 def main():
     ##### Parse arguments and check directories, make new if needed
-    globvar.xpim_dir, globvar.tif_dir, globvar.outpath, well_coord, coord_format, thresh = parsing_arguments()
+    GlobVar.xpim_dir, GlobVar.tif_dir, GlobVar.outpath, well_coord, coord_format, thresh = parsing_arguments()
+    GlobVar.debug = "./debug/cropped_images"
     check_dirs()
 
     ##### Get list of files to analyse
-    xpim_files = glob.glob(f"{globvar.xpim_dir}/*.xpim")
+    xpim_files = glob.glob(f"{GlobVar.xpim_dir}/*.xpim")
     xpim_bn = [os.path.splitext(os.path.basename(filepath))[0] for filepath in xpim_files]
 
     ##### Convert xpim files to tif files. This utilises the "pim2tif.exe" executable.
     # this executes pim2tiff.exe (only for windows), and creates several tif files (tif stack)
-    subprocess.check_call(["./scripts/pim2tiff.exe", f"{globvar.xpim_dir}"])
+    #subprocess.check_call(["./scripts/pim2tiff.exe", f"{globvar.xpim_dir}"])
 
     ##### Move tif files to the input/tif_files folder
-    [shutil.move(f"{globvar.xpim_dir}/{bn}.tif", f"{globvar.tif_dir}/{bn}.tif") for bn in xpim_bn]
+    #[shutil.move(f"{globvar.xpim_dir}/{bn}.tif", f"{globvar.tif_dir}/{bn}.tif") for bn in xpim_bn]
 
     ##### Separate the tif stacks in to individual images
     for tif_stack in glob.glob("./input/tif_files/*.tif"):
-        Multi2Singleframes.extract_frames(tif_stack, f"{globvar.tif_dir}/tif_frames")
+        extract_frames(tif_stack, f"{GlobVar.tif_dir}/tif_frames")
 
     ##### Read well_coord file, and convert to dictionary (Well_1: [coord1,coord2,coord3,coord4])
     # Note: Please check at the end of the data extraction process, that all the leaf area (and none from neighbouring wells) has been successfully captured.
-    globvar.wells = pd.read_csv(well_coord, sep = ",").to_dict(orient = "list")
+    GlobVar.wells = pd.read_csv(well_coord, sep = ",").to_dict(orient = "list")
     ## Check the format of the well coordinates
-    if (coord_format == 'auto' and is_imageJ_coord(globvar.wells) == True) or (coord_format == 'imagej'):
+    if (coord_format == 'auto' and is_imageJ_coord(GlobVar.wells) == True) or (coord_format == 'imagej'):
         print("Converting input coordinates to PlantCV-formatted coordinates.")
-        wells = convert2plantcv(globvar.wells)
-    elif (coord_format == 'auto' and is_imageJ_coord(globvar.wells) == False) or (coord_format == 'plantcv'):
+        wells = convert2plantcv(GlobVar.wells)
+    elif (coord_format == 'auto' and is_imageJ_coord(GlobVar.wells) == False) or (coord_format == 'plantcv'):
         print("Treating input coordinates as PlantCV-formatted coordinates.")
 
     ##### Analyse images and compute fvfm
@@ -66,24 +71,24 @@ def main():
     for image_file in xpim_bn:
         print(f"Analysing {image_file}")
         file_count = file_count + 1
-        fmax_plate, threshold_image = generate_threshold_image(image_file, thresh)
+        fmax_plate, threshold_image = generate_threshold_image(image_file, thresh, GlobVar)
 
         ## For each well in the well_coordinate file, compute fvfm
         print("Analysing each specified Well in the plate, based on the well coordinate file...")
-        for key in wells.keys():
-            df, well_thresh_image = get_fvfm_per_well(image_file, key, thresh, fmax_plate)
+        for key in GlobVar.wells.keys():
+            df, well_thresh_image = get_fvfm_per_well(image_file, key, thresh, fmax_plate, GlobVar)
             output_df = pd.concat([output_df, df])
             # Export threshold images to debug folder
-            cv2.imwrite(f"{globvar.debug_cropped}/threshold/{image_file}_threshold_{key}.tif", well_thresh_image)
+            cv2.imwrite(f"{GlobVar.debug}/threshold/{image_file}_threshold_{key}.tif", well_thresh_image)
     output_df = output_df.reset_index().drop(columns="index")
-    output_df.to_csv(f"{globvar.outpath}/FvFm_output.csv")
+    output_df.to_csv(f"{GlobVar.outpath}/FvFm_output.csv")
 
     print(f"End of script. Number of files analysed: {file_count}")
 
     # Finally, remove unnecessary directories
-    shutil.rmtree(f"{globvar.debug_cropped}/fmin", ignore_errors=True)
-    shutil.rmtree(f"{globvar.debug_cropped}/fdark", ignore_errors=True)
-    shutil.rmtree(f"{globvar.tif_dir}/tif_frames/", ignore_errors=True)
+    shutil.rmtree(f"{GlobVar.debug}/fmin", ignore_errors=True)
+    shutil.rmtree(f"{GlobVar.debug}/fdark", ignore_errors=True)
+    shutil.rmtree(f"{GlobVar.tif_dir}/tif_frames/", ignore_errors=True)
     # fmax and threshold will be kept for debugging purposes.
 
 def parsing_arguments():
@@ -127,20 +132,20 @@ def check_dirs():
     check_dirs will simply check whether necessary directories already exist. If they do, they are removed and recreated. If they don't, they are created.
     """
     ######## Take care of directories #########
-    if not os.path.exists(globvar.tif_dir):
-        os.makedirs(globvar.tif_dir)
+    if not os.path.exists(GlobVar.tif_dir):
+        os.makedirs(GlobVar.tif_dir)
     # Delete any tiff_frames file that already exists and replace with an empty one
-    if os.path.exists(f"{globvar.tif_dir}/tif_frames/"):
-        shutil.rmtree(f"{globvar.tif_dir}/tif_frames/")
-    os.makedirs(f"{globvar.tif_dir}/tif_frames/")
+    if os.path.exists(f"{GlobVar.tif_dir}/tif_frames/"):
+        shutil.rmtree(f"{GlobVar.tif_dir}/tif_frames/")
+    os.makedirs(f"{GlobVar.tif_dir}/tif_frames/")
     # Delete any previously existing debug folder and replace with empty directories
-    if os.path.exists(globvar.debug_cropped):
-        shutil.rmtree(globvar.debug_cropped)
+    if os.path.exists(GlobVar.debug):
+        shutil.rmtree(GlobVar.debug)
     subdirs = ["fmin", "fmax", "fdark", "threshold"]
-    [os.makedirs(f"{globvar.debug_cropped}/{subdir}") for subdir in subdirs]
+    [os.makedirs(f"{GlobVar.debug}/{subdir}") for subdir in subdirs]
     ## output directory
-    if not os.path.exists(f"{globvar.outpath}/threshold_output/"):
-        os.makedirs(f"{globvar.outpath}/threshold_output/")
+    if not os.path.exists(f"{GlobVar.outpath}/threshold_output/"):
+        os.makedirs(f"{GlobVar.outpath}/threshold_output/")
     ###########################################
 
 # def is_imageJ_coord(csv_dict):
