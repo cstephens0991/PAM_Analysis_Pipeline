@@ -42,10 +42,10 @@ def main():
 
     ##### Convert xpim files to tif files. This utilises the "pim2tif.exe" executable.
     # this executes pim2tiff.exe (only for windows), and creates several tif files (tif stack)
-    #subprocess.check_call(["./scripts/pim2tiff.exe", f"{globvar.xpim_dir}"])
+    subprocess.check_call(["./scripts/pim2tiff.exe", f"{GlobVar.xpim_dir}"])
 
     ##### Move tif files to the input/tif_files folder
-    #[shutil.move(f"{globvar.xpim_dir}/{bn}.tif", f"{globvar.tif_dir}/{bn}.tif") for bn in xpim_bn]
+    [shutil.move(f"{GlobVar.xpim_dir}/{bn}.tif", f"{GlobVar.tif_dir}/{bn}.tif") for bn in xpim_bn]
 
     ##### Separate the tif stacks in to individual images
     for tif_stack in glob.glob("./input/tif_files/*.tif"):
