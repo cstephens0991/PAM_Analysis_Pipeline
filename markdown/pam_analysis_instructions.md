@@ -96,53 +96,89 @@ pip install argparse
 micromamba activate get_fvfm
 ```
 
-2\. In Windows File Explorer, copy the "PAM_analysis_packages" folder to a folder in your computer. This folder can be found at *\\sofs2.uni-koeln.de\\agzuccaro\\PAM_analysis_pipeline*. 
+2\. Clone the PAM_analysis_pipeline repository from GitHub to your computer (this contains the scripts for the pipeline).
 
-- Note: The script will run faster if you copy the folder to your local computer and run it there, rather than your own folder in the sofs drive.
+- Note: The script will run faster if you clone the repository to your local computer and run it there, rather than your own folder in the sofs drive.
+- First, navigate in `git bash` to the location where you want to clone the repository (a new folder will be created called "PAM_analysis_pipeline"). For example, if you want to create that directory inside your "Documents/" folder, you can run this command:
 
-4\. Navigate in Git bash to the location where you have copied the "PAM_analysis_packages" folder. The easiest way to do this is to navigate to the correct folder using Windows File Explorer, then right-click on the top banner and select "Copy address".
+```bash
+cd $HOME/Documents/
+## to check what is present inside your Documents folder, use the ls command
+ls
+ls -lrth # these added options will list the contents in anti-chronological order, with some other information
+```
+**NB**: `cd` stands for **c**hange **d**irectory, so it's a command to navigate between folders inside the command line. 
+
+To clone the repository, simply run the following command in `git bash`:
+```bash
+gh repo clone cstephens0991/PAM_Analysis_Pipeline
+## check it was added:
+ls -lrth 
+# should list at the bottom, the PAM_Analysis_Pipeline folder
+```
 
 ![Figure 4: Copy the location of the "PAM_analysis_packages" folder.](./screenshots/screenshot_16.jpg)
 
- Then, in Git bash, type "cd " (remember the space following "cd") and paste the path using *```Shift``` + ```Insert```*. This should result in the following command in the command line:
- 
+3\. Change your directory (`cd` command again) to the recently created PAM_Analysis_Pipeline/PAM_analysis_packages folder:
+
+```bash
+cd PAM_Analysis_Pipeline/PAM_analysis_packages/
 ```
-cd C:\[path]\[to]\[your]\[folder]\PAM_analysis_packages
-```
+
 Other commands which may be useful in navigating to your required directory include:
 
-- ```dir```: returns a list of all files and folders in your current directory
-- ```pwd```: returns the path to you current location
-- ``` cd ..```: move up one level in the path (into the parent directory)
+- `dir`: returns a list of all files and folders in your current directory
+- `pwd`: returns the path to you current location
+- `cd ..`: move up one level in the path (into the parent directory)
 
-- Your current path location is also printed in yellow immediately above the command line. ```~``` (tilde) represents your home directory.
+- Your current path location is also printed in yellow immediately above the command line. ```~``` (tilde) represents your home directory. You can check which directory this is using `echo $HOME`.
 
 - When writing directory or file names, pressing ```Tab``` can auto complete the name of the folder/file. If several files share the prefix already typed, pressing ```Tab``` twice, will print the available options:
 
 ![Figure 5: Use ```Tab``` to autocomplete directory/file names. Typing (for example) ```ls get_fvfm``` followed by pressing ```Tab``` twice returns the possible options (in the red box).](./screenshots/screenshot_17.jpg)
 
-3\. In Windows File Explorer, copy the .xpim files to be analysed into the "PAM_analysis_packages/input/xpim_files/" directory.
+4\. In Windows File Explorer, copy the .xpim files to be analysed into the "PAM_analysis_packages/input/<experiment_xpim>/" directory.
 
-- Note this directory is prepopulated with an example file "Plate1_3dpt.xpim". You can use this file to carry out a test run of the pipeline, or delete it if you want to analyse your own files.
+**NB**: by default, the `get_fvfm_v3.py` script will look for xpim files in "PAM_analysis_packages/input/xpim_files/" directory. However, I recommend you create a folder inside "input" that identifies which experiment the xpim files are linked to. For example, if you use experiment identifiers, you could create a folder with this name inside `PAM_analysis_packages/input/`. Just run this command:
 
-4\. Ensure that the following directories do not contain any files from previous analyses:
+```bash
+## replace what is between <> with the actual experiment ID
+mkdir input/<experiment_id>_xpim/
+```
+
+- Note the default `input/xpim_files` directory is prepopulated with an example file "Plate1_3dpt.xpim". You can use this file to carry out a test run of the pipeline, or delete it if you want to copy and analyse your own files in this directory.
+
+5\. If you are using the default directories, ensure that the following directories do not contain any files from previous analyses:
 
  - "PAM_analysis_packages/debug/cropped_images"
  - "PAM_analysis_packages/input/tiff_files" (this folder may also contain a subdirectory "tiff_frames", if the pipeline has already been run)
- - "PAM_analysis_packages/output" and its subdirectory "threshold_output"
  - "PAM_analysis_packages/Plant_area_data" and its subdirectory "debug"
 
-5\. To run the "get_fvfm_v2.py" script, enter the following command into Git Bash:
+6\. To run the "get_fvfm_v3.py" script, enter the following command into Git Bash:
 ```
-python get_fvfm_v2.py
+python get_fvfm_v3.py --help
 ```
 
-- At time of writing, v2 is the most up-to-date version of the script to extract FvFm data.
+This will give you all the available options to the script. Here's a run-through of the available options:
+
+- `--xpim-dir`: the directory/folder containing the \*.xpim files. The default is `./input/xpim_files/`. *I do recommend changing this, and using a custom directory, with an experiment identifier.*
+- `--tif-dir`: the directory/folder containing the \*.tif files. The default is `./input/tif_files/`. *I do recommend changing this, and using a custom directory, with the same experiment identifier as with the \*.xpim files.*
+- `--outpath`: the output directory which will contain results of current run. The default is './output_<TIMESTAMP>'. Using the default will add a timestand to the output folder name. This way, if you run the script several times in a row on the same dataset, it will NOT overwrite the results of previous runs. You can also use a custom name, with an experiment ID (as explained above), but if you run it several times, remember to change the `--outpath` name if you want to keep the results. 
+- `--well-coord`: CSV file containing the well coordinates. The columns should be the Well names (well_1, well_2 etc), and the rows contain the coordinates (x1,y1,x2,y2). If format is imagej, specify in coord_format option. [default = './input/24_wells_transposed.csv']
+- `--coord-format`: Format of well coordinates. ImageJ sees Well coordinates as: [100, 130, 70, 70] , corresponding to [x_start, y_start, x_width, y_width]. PlantCV sees Well coordinates as: [100, 130, 170, 200], corresponding to [x_start, y_start, x_end, y_end]. By default, it will try to detect the format ('auto'), but can be set to 'plantcv' or 'imagej' (case-sensitive). [default = 'auto']
+- `--threshold`: Threshold to define plant material from background. Default is Yen's threshold, as defined by Yen et al 1995 (10.1109/83.366472). [default = 'yen']
+
+Here is an example run with all options specified, for an experiment called "pam_exp102":
+```bash
+python get_fvfm_v3.py --xpim-dir ./input/pam_exp102_xpim/ --tif-dir ./input/pam_exp102_tif/ --outpath ./output_pam_exp102/ --well-coord ./input/24_wells_transposed.csv --coord-format auto --threshold 40
+```
+
+The well coordinates were measured by Chris for 24-well plates, of the brand "XXX". If you are using 48-well plates, you will need a custom coordinate file, following the same specifications as the 24-well plates. Be mindful, some 24-well plates might have different dimensions. The idea is to add some coordinate files to this repository in the end, so there is some choice for future users. If you have new plate dimensions, feel free to send them to me so I can add them. 
 
  - Whilst the script is running, it will print the calculated FvFm values to Git Bash. It will also print the name of each plate image that is analysed and the total number of images analysed as part of the script. In addition, if the script finds anything unusual (e.g. records already present in the folders above which should be empty) then it will print a warning message.
  - Note: An additional python file in the folder “get_fvfm_black_plates_v2.py” is to be used for analysis of images generated using the black cell culture plates provided by Sarstaedt (prod. No.: 94.6000.014).
  
-6\. Once the script has finished running (message printed: ```End of script. Number of files analysed: [...]```) check the output folder:
+7\. Once the script has finished running (message printed: ```End of script. Number of files analysed: [...]```) check the output folder:
 
 ![Figure 6: Example output from "get_fvfm_v2.py" script. Note that an error message warning about future deprecation exists. This does not affect the output, and an update is currently in progress to remove this error.).](./screenshots/screenshot_19.jpg)
 
