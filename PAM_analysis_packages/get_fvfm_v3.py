@@ -25,7 +25,7 @@ import cv2 as cv2
 # from scripts.Multi2Singleframes import extract_frames
 # from scripts.get_fvfm_mod import get_fvfm_per_well
 # from scripts.threshold_image_mod import generate_threshold_image
-from helper import is_imageJ, convert2plantcv, extract_frames, get_fvfm_per_well, generate_threshold_image
+from scripts.helper import is_imageJ, convert2plantcv, extract_frames, get_fvfm_per_well, generate_threshold_image
 
 # Import a python file with global variables
 from scripts.globvar import GlobVar

@@ -117,8 +117,6 @@ ls -lrth
 # should list at the bottom, the PAM_Analysis_Pipeline folder
 ```
 
-![Figure 4: Copy the location of the "PAM_analysis_packages" folder.](./screenshots/screenshot_16.jpg)
-
 3\. Change your directory (`cd` command again) to the recently created PAM_Analysis_Pipeline/PAM_analysis_packages folder:
 
 ```bash
