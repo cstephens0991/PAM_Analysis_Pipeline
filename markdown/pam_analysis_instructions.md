@@ -51,7 +51,7 @@ _Described previously by Nick. See also "How to use the PAM camera.docx"_
 10\. Repeat steps 4 to 9 for all plates.
 
 ## Extract photosynthetic efficiency (Y(II)) data from PIM files
-### Part 1: Installation and set-up
+### Step 1: Installation and set-up
 
 This step *only has to be carried out the first time you follow this protocol*. For repeat use of the pipeline, skip to ~~Part 2~~.
 
@@ -92,7 +92,7 @@ pip install argparse
 
 1\. If you have not done so already (following protocol above), open Gitbash and activate the "get_fvfm" environment:
 
-```
+```bash
 micromamba activate get_fvfm
 ```
 
