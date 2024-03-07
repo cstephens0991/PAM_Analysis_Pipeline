@@ -180,7 +180,8 @@ def generate_threshold_image(image_file, thresh, GlobVar):
     if thresh == "yen":
         threshold_lvl = filters.threshold_yen(image=fmax_plate)
     else:
-        threshold_lvl = thresh
+        threshold_lvl = int(thresh)
+        print(threshold_lvl)
     threshold_image = pcv.threshold.binary(gray_img = fmax_plate, threshold = threshold_lvl, object_type = 'light')
     threshold_image = pcv.fill(threshold_image, size = 5)
     cv2.imwrite(f"{GlobVar.outpath}/threshold_output/{image_file}_threshold_image.tif", threshold_image)
