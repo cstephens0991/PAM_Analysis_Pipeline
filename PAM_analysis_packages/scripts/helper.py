@@ -176,7 +176,7 @@ def generate_threshold_image(image_file, thresh, GlobVar):
     #fmin_plate, path, filename = pcv.readimage(f"{tif_dir}/tif_frames/{image_file}-1.tif", mode = "native")
     image2read = os.path.abspath(f"{GlobVar.tif_dir}/tif_frames/{image_file}-2.tif")
     print(image2read)
-    fmax_plate, _, _ = pcv.readimage(f"{GlobVar.tif_dir}/tif_frames/{image_file}-2.tif", mode = "native")
+    fmax_plate, _, _ = pcv.readimage(image2read, mode = "native")
     #fdark_plate, path, filename = pcv.readimage(f"{tif_dir}/tif_frames/{image_file}-3.tif", mode = "native")
     if thresh == "yen":
         threshold_lvl = filters.threshold_yen(image=fmax_plate)
