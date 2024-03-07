@@ -48,7 +48,7 @@ def main():
     [shutil.move(f"{GlobVar.xpim_dir}/{bn}.tif", f"{GlobVar.tif_dir}/{bn}.tif") for bn in xpim_bn]
 
     ##### Separate the tif stacks in to individual images
-    for tif_stack in glob.glob("./input/tif_files/*.tif"):
+    for tif_stack in glob.glob(f"{GlobVar.tif_dir}/*.tif"):
         extract_frames(tif_stack, f"{GlobVar.tif_dir}/tif_frames")
 
     ##### Read well_coord file, and convert to dictionary (Well_1: [coord1,coord2,coord3,coord4])
