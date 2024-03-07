@@ -66,37 +66,7 @@ This step *only has to be carried out the first time you follow this protocol*. 
 - Note: you can check that micromamba is correctly installed by printing the micromamba help window using the `micromamba -h` command. 
 - Note: Important commands for navigating in Git bash include "`pwd`" (provide working directory; the path to where you are currently located), "`dir`" (print the contents of your current location) and "`cd`" (change directory). To go "up" in the path from your current location, use "`cd ..`".
 
-3\. Next, in Git bash create a new python environment in which to run the "PAM_analysis_packages" scripts. The following command will generate an environment called "get_fvfm" based on the specifications in the `get_fvfm_env.yml` file:
-
-```bash
-micromamba create -n get_fvfm --file PAM_analysis_packages/scripts/get_fvfm_env.yml
-```
-
-- Note: You can check which environments you have available using the command `micromamba env list` in Git bash.
-
-4\. To edit the new "get_fvfm" environment we must first activate it:
-
-```
-micromamba activate get_fvfm
-```
-
-![*Figure 3:* Gitbash looks very similar to regular Command Prompt for Windows. One difference is it runs within an environment. The default environment is known as 'base'.](./screenshots/Screenshot_15.jpg)
-
-5\. Finally, one more package should be installed, in order to parse arguments (options) for the main script. Unfortunately, this package is not available in micromamba, but is easily installed using `pip`. To install `pip`, follow the instructions on https://pip.pypa.io/en/stable/installation/. Then, run the following command, to install the package called `argparse`:
-
-```bash
-pip install argparse
-```
-
-### Step 2: Loading the "get_fvfm" environment and running "get_fvfm.py" to obtain FvFm values
-
-1\. If you have not done so already (following protocol above), open Gitbash and activate the "get_fvfm" environment:
-
-```bash
-micromamba activate get_fvfm
-```
-
-2\. Clone the PAM_analysis_pipeline repository from GitHub to your computer (this contains the scripts for the pipeline).
+3\. Clone the PAM_analysis_pipeline repository from GitHub to your computer (this contains the scripts for the pipeline).
 
 - Note: The script will run faster if you clone the repository to your local computer and run it there, rather than your own folder in the sofs drive.
 - First, navigate in `git bash` to the location where you want to clone the repository (a new folder will be created called "PAM_analysis_pipeline"). For example, if you want to create that directory inside your "Documents/" folder, you can run this command:
@@ -111,16 +81,12 @@ ls -lrth # these added options will list the contents in anti-chronological orde
 
 To clone the repository, simply run the following command in `git bash`:
 ```bash
-gh repo clone cstephens0991/PAM_Analysis_Pipeline
+git clone https://github.com/cstephens0991/PAM_Analysis_Pipeline
 ## check it was added:
 ls -lrth 
 # should list at the bottom, the PAM_Analysis_Pipeline folder
-```
-
-3\. Change your directory (`cd` command again) to the recently created PAM_Analysis_Pipeline/PAM_analysis_packages folder:
-
-```bash
-cd PAM_Analysis_Pipeline/PAM_analysis_packages/
+## move into that folder:
+cd PAM_Analysis_Pipeline
 ```
 
 Other commands which may be useful in navigating to your required directory include:
@@ -135,7 +101,51 @@ Other commands which may be useful in navigating to your required directory incl
 
 ![Figure 5: Use ```Tab``` to autocomplete directory/file names. Typing (for example) ```ls get_fvfm``` followed by pressing ```Tab``` twice returns the possible options (in the red box).](./screenshots/screenshot_17.jpg)
 
-4\. In Windows File Explorer, copy the .xpim files to be analysed into the "PAM_analysis_packages/input/<experiment_xpim>/" directory.
+4\. Next, in Git bash create a new python environment in which to run the "PAM_analysis_packages" scripts. The following command will generate an environment called "get_fvfm" based on the specifications in the `get_fvfm_env.yml` file:
+
+```bash
+micromamba create -n get_fvfm --file PAM_analysis_packages/scripts/get_fvfm_env.yml
+```
+
+- Note: You can check which environments you have available using the command `micromamba env list` in Git bash.
+
+5\. To edit the new "get_fvfm" environment we must first activate it:
+
+```
+micromamba activate get_fvfm
+```
+
+![*Figure 3:* Gitbash looks very similar to regular Command Prompt for Windows. One difference is it runs within an environment. The default environment is known as 'base'.](./screenshots/Screenshot_15.jpg)
+
+6\. Finally, one more package should be installed, in order to parse arguments (options) for the main script. Unfortunately, this package is not available in micromamba, but is easily installed using `pip`. First check if `pip` is already installed (I think it should be on Git bash):
+
+```bash
+pip
+```
+
+If this does not give you something like "command not found", and instead returns a whole bunch of options, you're good to go. Otherwise, install `pip` by following the instructions on https://pip.pypa.io/en/stable/installation/. 
+
+Then, run the following command, to install the package called `argparse`:
+
+```bash
+pip install argparse
+```
+
+### Step 2: Loading the "get_fvfm" environment and running "get_fvfm.py" to obtain FvFm values
+
+1\. If you have not done so already (following protocol above), open Gitbash and activate the "get_fvfm" environment:
+
+```bash
+micromamba activate get_fvfm
+```
+
+2\. Change your directory (`cd` command again) to the PAM_analysis_packages folder:
+
+```bash
+cd PAM_analysis_packages/
+```
+
+3\. In Windows File Explorer, copy the .xpim files to be analysed into the "PAM_analysis_packages/input/<experiment_xpim>/" directory.
 
 **NB**: by default, the `get_fvfm_v3.py` script will look for xpim files in "PAM_analysis_packages/input/xpim_files/" directory. However, I recommend you create a folder inside "input" that identifies which experiment the xpim files are linked to. For example, if you use experiment identifiers, you could create a folder with this name inside `PAM_analysis_packages/input/`. Just run this command:
 
@@ -146,13 +156,13 @@ mkdir input/<experiment_id>_xpim/
 
 - Note the default `input/xpim_files` directory is prepopulated with an example file "Plate1_3dpt.xpim". You can use this file to carry out a test run of the pipeline, or delete it if you want to copy and analyse your own files in this directory.
 
-5\. If you are using the default directories, ensure that the following directories do not contain any files from previous analyses:
+4\. If you are using the default directories, ensure that the following directories do not contain any files from previous analyses:
 
  - "PAM_analysis_packages/debug/cropped_images"
  - "PAM_analysis_packages/input/tiff_files" (this folder may also contain a subdirectory "tiff_frames", if the pipeline has already been run)
  - "PAM_analysis_packages/Plant_area_data" and its subdirectory "debug"
 
-6\. To run the "get_fvfm_v3.py" script, enter the following command into Git Bash:
+5\. To run the "get_fvfm_v3.py" script, enter the following command into Git Bash:
 ```
 python get_fvfm_v3.py --help
 ```
@@ -176,7 +186,7 @@ The well coordinates were measured by Chris for 24-well plates, of the brand "XX
  - Whilst the script is running, it will print the calculated FvFm values to Git Bash. It will also print the name of each plate image that is analysed and the total number of images analysed as part of the script. In addition, if the script finds anything unusual (e.g. records already present in the folders above which should be empty) then it will print a warning message.
  - Note: An additional python file in the folder “get_fvfm_black_plates_v2.py” is to be used for analysis of images generated using the black cell culture plates provided by Sarstaedt (prod. No.: 94.6000.014).
  
-7\. Once the script has finished running (message printed: ```End of script. Number of files analysed: [...]```) check the output folder:
+6\. Once the script has finished running (message printed: ```End of script. Number of files analysed: [...]```) check the output folder:
 
 ![Figure 6: Example output from "get_fvfm_v2.py" script. Note that an error message warning about future deprecation exists. This does not affect the output, and an update is currently in progress to remove this error.).](./screenshots/screenshot_19.jpg)
 
