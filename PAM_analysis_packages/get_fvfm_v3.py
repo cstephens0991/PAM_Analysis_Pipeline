@@ -54,6 +54,7 @@ def main():
     ##### Read well_coord file, and convert to dictionary (Well_1: [coord1,coord2,coord3,coord4])
     # Note: Please check at the end of the data extraction process, that all the leaf area (and none from neighbouring wells) has been successfully captured.
     GlobVar.wells = pd.read_csv(well_coord, sep = ",").to_dict(orient = "list")
+    print(GlobVar.wells)
     ## Check the format of the well coordinates
     if (coord_format == 'auto' and is_imageJ(GlobVar.wells) == True) or (coord_format == 'imagej'):
         print("Converting input coordinates to PlantCV-formatted coordinates.")
