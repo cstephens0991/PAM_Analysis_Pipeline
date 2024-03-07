@@ -219,7 +219,7 @@ def get_fvfm_per_well(image_file, key, thresh, fmax_plate, GlobVar):
     if thresh == "yen":
         threshold_lvl = filters.threshold_yen(image=fmax_plate)
     else:
-        threshold_lvl = thresh
+        threshold_lvl = int(thresh)
     # Use the threshold value to filter out highlighted plate areas
     threshold_image = pcv.threshold.binary(gray_img=fmax, threshold=threshold_lvl, object_type='light')
     threshold_image = pcv.fill(threshold_image, size=5)
