@@ -106,7 +106,7 @@ for (i = 0; i < lengthOf(list); i++) {
 				run("Add Selection...", "stroke=yellow width=2");
 				// Final particle analysis data is saved as "Summary.csv" in the following folder.
 				data_save = output+name+".csv";
-				image_save = output+"/debug/"+name+".jpg";
+				image_save = output+"\\debug\\"+name+".jpg";
 				saveAs("Results", data_save);
 				saveAs("Jpeg", image_save);
 				close();
