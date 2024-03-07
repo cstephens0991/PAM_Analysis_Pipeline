@@ -229,12 +229,12 @@ def get_fvfm_per_well(image_file, key, thresh, fmax_plate, GlobVar):
     df = pd.DataFrame([[image_file, key, part_Fv]], columns = ["Plate", "Well", "FvFm"])
     return df, threshold_image
 
-def is_imageJ(GlobVar):
+def is_imageJ(wells_dict):
     '''
     is_imageJ will try to automatically detect the format of the input well coordinates. To do this, it assumes that all wells have equal widths. 
     Therefore, it simply checks whether the last 2 elements of each Well_coord array are always the same. If so, returns True, else returns False.
     '''
-    csv_df = pd.DataFrame.from_dict(GlobVar.wells, orient = 'columns')
+    csv_df = pd.DataFrame.from_dict(wells_dict, orient = 'columns')
     x_end = np.unique(csv_df.loc[2])
     y_end = np.unique(csv_df.loc[3])
     if (len(x_end) == 1) and (len(y_end) == 1):
