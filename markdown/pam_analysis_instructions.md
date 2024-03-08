@@ -174,15 +174,18 @@ python get_fvfm_v3.py --xpim-dir ./input/pam_exp102_xpim/ --tif-dir ./input/pam_
 
 Of course, we need the xpim files as input, copied in our `input/xpim` directory. 
 
-    - Either we copy them inside `input/xpim_files/` (not recommended, see below).
+- Either we copy them inside `input/xpim_files/` (not recommended, see below).
 
-    - Or we create an experiment-specific subfolder inside input, for your xpim_files `PAM_analysis_packages/input/<experiment_xpim>/`.
+- Or we create an experiment-specific subfolder inside input, for your xpim_files `PAM_analysis_packages/input/<experiment_xpim>/`.
 
 **Note**: by default, the `get_fvfm_v3.py` script will look for xpim files in "input/xpim_files/" directory. However, I recommend you to **create a folder** inside "input" that identifies which experiment the xpim files are linked to. For example, if you use experiment identifiers, you could create a folder with this name inside `input/`. Just run this command:
 
 ```bash
-## replace <experiment_id> with the actual experiment ID
+## replace "<experiment_id>" with the actual experiment ID
 mkdir input/<experiment_id>_xpim/
+```
+
+```bash
 ## check it was made:
 ls input/
 ```
@@ -216,6 +219,12 @@ The well coordinates were measured by Chris for 24-well plates, of the brand "XX
  - Whilst the script is running, it will print the calculated FvFm values to Git Bash. It will also print the name of each plate image that is analysed and the total number of images analysed as part of the script. In addition, if the script finds anything unusual (e.g. records already present in the folders above which should be empty) then it will print a warning message.
  - Note: An additional python file in the folder “get_fvfm_black_plates_v2.py” is to be used for analysis of images generated using the black cell culture plates provided by Sarstaedt (prod. No.: 94.6000.014).
  
+5\. Now you can run the script, as specified above:
+
+```bash 
+python get_fvfm_v3.py --xpim-dir ./input/<your_xpim_directory>/ --tif-dir ./input/<your_tif_directory>/ --outpath ./<your_output_directory>/ --well-coord ./input/24_wells_transposed.csv --coord-format auto --threshold <your_threshold>
+```
+
 5\. Once the script has finished running (message printed: ```End of script. Number of files analysed: [...]```) check the output folder:
 
 ![Figure 6: Example output from "get_fvfm_v2.py" script. Note that an error message warning about future deprecation exists. This does not affect the output, and an update is currently in progress to remove this error.).](./screenshots/screenshot_19.jpg)
