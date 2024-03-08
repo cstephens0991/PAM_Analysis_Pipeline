@@ -50,7 +50,7 @@ Other commands which may be useful in navigating to your required directory incl
 
 - When writing directory or file names, pressing ```Tab``` can auto complete the name of the folder/file. If several files share the prefix already typed, pressing ```Tab``` twice, will print the available options:
 
-![Figure 5: Use ```Tab``` to autocomplete directory/file names. Typing (for example) ```ls get_fvfm``` followed by pressing ```Tab``` twice returns the possible options (in the red box).](./screenshots/screenshot_17.jpg)
+![Figure 5: Use ```Tab``` to autocomplete directory/file names. Typing (for example) ```ls get_fvfm``` followed by pressing ```Tab``` twice returns the possible options (in the red box).](./markdown/screenshots/screenshot_17.jpg)
 
 4\. Next, in Git bash create a new python environment in which to run the "PAM_analysis_packages" scripts. The following command will generate an environment called "get_fvfm" based on the specifications in the `get_fvfm_env.yml` file:
 
@@ -66,7 +66,7 @@ micromamba create -n get_fvfm --file PAM_analysis_packages/scripts/get_fvfm_env.
 micromamba activate get_fvfm
 ```
 
-![*Figure 3:* Gitbash looks very similar to regular Command Prompt for Windows. One difference is it runs within an environment. The default environment is known as 'base'.](./screenshots/Screenshot_15.jpg)
+![*Figure 3:* Gitbash looks very similar to regular Command Prompt for Windows. One difference is it runs within an environment. The default environment is known as 'base'.](./markdown/screenshots/Screenshot_15.jpg)
 
 6\. Finally, one more package should be installed, in order to parse arguments (options) for the main script. Unfortunately, this package is not available in micromamba, but is easily installed using `pip`. First check if `pip` is already installed (I think it should be on Git bash):
 
