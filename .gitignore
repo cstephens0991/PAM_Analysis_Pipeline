@@ -5,6 +5,10 @@ logfiles/*
 
 # ignore output files
 PAM_analysis_packages/output_*/
+PAM_analysis_packages/*output*/
+
+## ignore input files
+PAM_analysis_packages/input/
 
 # ignore debug_cropped directory
 PAM_analysis_packages/debug/
