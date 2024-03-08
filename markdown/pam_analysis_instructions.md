@@ -150,9 +150,33 @@ ls -lrth
 
 Notice the `input/` folder. We will put the input files there (xpim files).
 
-3\. Copy the xpim files to the input folder:
-    - Either inside `input/xpim_files/` (not recommended, see below).
-    - Create an experiment-specific subfolder inside input, for your xpim_files `PAM_analysis_packages/input/<experiment_xpim>/`.
+3\. **Usage of get_fvfm_v3.py**
+
+To run the "get_fvfm_v3.py" script, enter the following command into Git Bash:
+```bash
+## might take 15-30 seconds
+python get_fvfm_v3.py --help
+```
+
+This will give you all the available options to the script. Here's a run-through of the available options:
+
+- `--xpim-dir`: the directory/folder containing the \*.xpim files. The default is `./input/xpim_files/`. *I do recommend changing this, and using a custom directory, with an experiment identifier.*           
+- `--tif-dir`: the directory/folder containing the \*.tif files. The default is `./input/tif_files/`. *I do recommend changing this, and using a custom directory, with the same experiment identifier as with the \*.xpim files.*          
+- `--outpath`: the output directory which will contain results of current run. The default is './output_<TIMESTAMP>'. Using the default will add a timestand to the output folder name. This way, if you run the script several times in a row on the same dataset, it will NOT overwrite the results of previous runs. You can also use a custom name, with an experiment ID (as explained above), but if you run it several times, remember to change the `--outpath` name if you want to keep the results.           
+- `--well-coord`: CSV file containing the well coordinates. The columns should be the Well names (well_1, well_2 etc), and the rows contain the coordinates (x1,y1,x2,y2). If format is imagej, specify in coord_format option. [default = './input/24_wells_transposed.csv']           
+- `--coord-format`: Format of well coordinates. ImageJ sees Well coordinates as: [100, 130, 70, 70] , corresponding to [x_start, y_start, x_width, y_width]. PlantCV sees Well coordinates as: [100, 130, 170, 200], corresponding to [x_start, y_start, x_end, y_end]. By default, it will try to detect the format ('auto'), but can be set to 'plantcv' or 'imagej' (case-sensitive). [default = 'auto']         
+- `--threshold`: Threshold to define plant material from background. Default is Yen's threshold, as defined by Yen et al 1995 (10.1109/83.366472). [default = 'yen']            
+
+Here is an example run with all options specified, for an experiment called "pam_exp102":
+```bash
+python get_fvfm_v3.py --xpim-dir ./input/pam_exp102_xpim/ --tif-dir ./input/pam_exp102_tif/ --outpath ./output_pam_exp102/ --well-coord ./input/24_wells_transposed.csv --coord-format auto --threshold 40
+```
+
+Of course, we need the xpim files as input, copied in our `input/xpim` directory. 
+
+    - Either we copy them inside `input/xpim_files/` (not recommended, see below).
+
+    - Or we create an experiment-specific subfolder inside input, for your xpim_files `PAM_analysis_packages/input/<experiment_xpim>/`.
 
 **Note**: by default, the `get_fvfm_v3.py` script will look for xpim files in "input/xpim_files/" directory. However, I recommend you to **create a folder** inside "input" that identifies which experiment the xpim files are linked to. For example, if you use experiment identifiers, you could create a folder with this name inside `input/`. Just run this command:
 
@@ -181,29 +205,11 @@ You should see a list of your xpim files.
 
 3bis\. If you are using the default directories, ensure that the following directories do not contain any files from previous analyses:
 
- - "PAM_analysis_packages/debug/cropped_images"
- - "PAM_analysis_packages/input/tiff_files" (this folder may also contain a subdirectory "tiff_frames", if the pipeline has already been run)
- - "PAM_analysis_packages/Plant_area_data" and its subdirectory "debug"
+ - "PAM_analysis_packages/debug/cropped_images"         
+ - "PAM_analysis_packages/input/tiff_files" (this folder may also contain a subdirectory "tiff_frames", if the pipeline has already been run)           
+ - "PAM_analysis_packages/Plant_area_data" and its subdirectory "debug"         
 
-4\. To run the "get_fvfm_v3.py" script, enter the following command into Git Bash:
-```bash
-## might take 15-30 seconds
-python get_fvfm_v3.py --help
-```
-
-This will give you all the available options to the script. Here's a run-through of the available options:
-
-- `--xpim-dir`: the directory/folder containing the \*.xpim files. The default is `./input/xpim_files/`. *I do recommend changing this, and using a custom directory, with an experiment identifier.*
-- `--tif-dir`: the directory/folder containing the \*.tif files. The default is `./input/tif_files/`. *I do recommend changing this, and using a custom directory, with the same experiment identifier as with the \*.xpim files.*
-- `--outpath`: the output directory which will contain results of current run. The default is './output_<TIMESTAMP>'. Using the default will add a timestand to the output folder name. This way, if you run the script several times in a row on the same dataset, it will NOT overwrite the results of previous runs. You can also use a custom name, with an experiment ID (as explained above), but if you run it several times, remember to change the `--outpath` name if you want to keep the results. 
-- `--well-coord`: CSV file containing the well coordinates. The columns should be the Well names (well_1, well_2 etc), and the rows contain the coordinates (x1,y1,x2,y2). If format is imagej, specify in coord_format option. [default = './input/24_wells_transposed.csv']
-- `--coord-format`: Format of well coordinates. ImageJ sees Well coordinates as: [100, 130, 70, 70] , corresponding to [x_start, y_start, x_width, y_width]. PlantCV sees Well coordinates as: [100, 130, 170, 200], corresponding to [x_start, y_start, x_end, y_end]. By default, it will try to detect the format ('auto'), but can be set to 'plantcv' or 'imagej' (case-sensitive). [default = 'auto']
-- `--threshold`: Threshold to define plant material from background. Default is Yen's threshold, as defined by Yen et al 1995 (10.1109/83.366472). [default = 'yen']
-
-Here is an example run with all options specified, for an experiment called "pam_exp102":
-```bash
-python get_fvfm_v3.py --xpim-dir ./input/pam_exp102_xpim/ --tif-dir ./input/pam_exp102_tif/ --outpath ./output_pam_exp102/ --well-coord ./input/24_wells_transposed.csv --coord-format auto --threshold 40
-```
+4\. Note on the well coordinates:
 
 The well coordinates were measured by Chris for 24-well plates, of the brand "XXX". If you are using 48-well plates, you will need a custom coordinate file, following the same specifications as the 24-well plates. Be mindful, some 24-well plates might have different dimensions. The idea is to add some coordinate files to this repository in the end, so there is some choice for future users. If you have new plate dimensions, feel free to send them to me so I can add them. 
 
