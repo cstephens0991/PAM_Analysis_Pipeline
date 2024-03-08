@@ -24,7 +24,7 @@ def main():
 
     # Combine ImageJ area score and FvFm score into a single value
     merged_data["Area_FvFm"] = merged_data["Total_Area"] * merged_data["FvFm"]
-    merged_data.to_csv(f"{outpath}/combined_output.csv")
+    merged_data.to_csv(f"{outpath}/combined_output.csv", index = False)
 
 def parsing_arguments():
     parser = argparse.ArgumentParser(
