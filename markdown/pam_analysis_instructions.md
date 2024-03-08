@@ -139,31 +139,55 @@ pip install argparse
 micromamba activate get_fvfm
 ```
 
-2\. Change your directory (`cd` command again) to the PAM_analysis_packages folder:
+2\. Change your directory (`cd` command again) to the PAM_analysis_packages folder, and look what is already there:
 
 ```bash
+## change directory (cd)
 cd PAM_analysis_packages/
+## list the files that are there (ls)
+ls -lrth
 ```
 
-3\. In Windows File Explorer, copy the .xpim files to be analysed into the "PAM_analysis_packages/input/<experiment_xpim>/" directory.
+Notice the `input/` folder. We will put the input files there (xpim files).
 
-**NB**: by default, the `get_fvfm_v3.py` script will look for xpim files in "PAM_analysis_packages/input/xpim_files/" directory. However, I recommend you create a folder inside "input" that identifies which experiment the xpim files are linked to. For example, if you use experiment identifiers, you could create a folder with this name inside `PAM_analysis_packages/input/`. Just run this command:
+3\. Copy the xpim files to the input folder:
+    - Either inside `input/xpim_files/` (not recommended, see below).
+    - Create an experiment-specific subfolder inside input, for your xpim_files `PAM_analysis_packages/input/<experiment_xpim>/`.
+
+**Note**: by default, the `get_fvfm_v3.py` script will look for xpim files in "input/xpim_files/" directory. However, I recommend you to **create a folder** inside "input" that identifies which experiment the xpim files are linked to. For example, if you use experiment identifiers, you could create a folder with this name inside `input/`. Just run this command:
 
 ```bash
-## replace what is between <> with the actual experiment ID
+## replace <experiment_id> with the actual experiment ID
 mkdir input/<experiment_id>_xpim/
+## check it was made:
+ls input/
 ```
 
 - Note the default `input/xpim_files` directory is prepopulated with an example file "Plate1_3dpt.xpim". You can use this file to carry out a test run of the pipeline, or delete it if you want to copy and analyse your own files in this directory.
 
-4\. If you are using the default directories, ensure that the following directories do not contain any files from previous analyses:
+To copy the xpim files, you can either do it in the Windows File Explorer, or if you want to stay inside Git Bash, and you know where your files are, you can run this command:
+
+```bash
+## copy files (cp)
+cp <path/to/your/xpim>/*.xpim input/<experiment_id>_xpim/
+# replace the <path/to/your/xpim> with the path that leads to your xpim files. *.xpim will then find all files that end with .xpim
+# replace <experiment_id> with the actual folder name you created
+
+## check it worked:
+ls input/<experiment_id>_xpim/
+```
+
+You should see a list of your xpim files. 
+
+3bis\. If you are using the default directories, ensure that the following directories do not contain any files from previous analyses:
 
  - "PAM_analysis_packages/debug/cropped_images"
  - "PAM_analysis_packages/input/tiff_files" (this folder may also contain a subdirectory "tiff_frames", if the pipeline has already been run)
  - "PAM_analysis_packages/Plant_area_data" and its subdirectory "debug"
 
-5\. To run the "get_fvfm_v3.py" script, enter the following command into Git Bash:
-```
+4\. To run the "get_fvfm_v3.py" script, enter the following command into Git Bash:
+```bash
+## might take 15-30 seconds
 python get_fvfm_v3.py --help
 ```
 
@@ -186,30 +210,38 @@ The well coordinates were measured by Chris for 24-well plates, of the brand "XX
  - Whilst the script is running, it will print the calculated FvFm values to Git Bash. It will also print the name of each plate image that is analysed and the total number of images analysed as part of the script. In addition, if the script finds anything unusual (e.g. records already present in the folders above which should be empty) then it will print a warning message.
  - Note: An additional python file in the folder “get_fvfm_black_plates_v2.py” is to be used for analysis of images generated using the black cell culture plates provided by Sarstaedt (prod. No.: 94.6000.014).
  
-6\. Once the script has finished running (message printed: ```End of script. Number of files analysed: [...]```) check the output folder:
+5\. Once the script has finished running (message printed: ```End of script. Number of files analysed: [...]```) check the output folder:
 
 ![Figure 6: Example output from "get_fvfm_v2.py" script. Note that an error message warning about future deprecation exists. This does not affect the output, and an update is currently in progress to remove this error.).](./screenshots/screenshot_19.jpg)
 
  - A file "output/FvFm_output.csv" should now be present, which contains the Y(II) values of all the .xpim files.
- - In the "threshold_output" folder there should be a series of contrast images for each of your plates. These will be used to generate the plant area data...
+ - In the "threshold_output" folder there should be a series of **contrast images** for each of your plates. These will be used to generate the plant area data...
 
 
 ### Step 3: Extract plant area data from "Contrast" images
+First, the ImageJ macro needs the output directories (folders) to be already created. If this is not the case, it will crash. 
 
-Plant area data will be extracted from contrast images using ImageJ and the "macro" file **"Contrast_area_quant_directory_v2.1.txt"**
+```bash
+## create the plant_area_data output directory, as well as the debug subfolder
+# mkdir = make directory. -p option enables creation of subdirectory as well
+mkdir -p plant_area_data/debug/
+```
+
+Right now, the input and output directories are "hardcoded", meaning they have to be changed before running the macro. The `input` directory is the <output_dir>/threshold_output/, where `output_dir` is the one you defined in the `get_fvfm_v3.py` script (in the `--outpath` option). I made a little script that will replace this in the macro:
+
+```bash
+python scripts/replace_inout_macro.py --input output_test --output plant_area_data --macro-in get_plant_area.txt --macro-out get_plant_area_mod.txt
+```
+
+The file created (specified by `--macro-out`) is the one you have to be used in ImageJ. 
+
+Open ImageJ. Select "Plugins > Macros > Run... ". Then navigate to `PAM_Analysis_Pipeline/PAM_analysis_packages/` and select the modified `get_plant_area_mod.txt` macro you just created.
+
  - Note: An alternative ImageJ macro file exists called “Contrast_area_quant_black_plates_v2.txt”. This file is to be used for analysis of images using the black cell culture plates provided by Sarstaedt (prod. No.: 94.6000.014), as the well locations are different from standard plates.
 
-Open ImageJ. Select "Plugins > Macros > Run... ". Then navigate to the "PM_analysis_pipeline" folder in which you are processing image files.
-
-
 ![Figure 7: Method for running Macro files in ImageJ](./screenshots/Screenshot_10.jpg)
-
-
-- Navigate to your PAM_analysis_packages folder and select "Contrast_area_quant_directory_v2.txt".
-
- - Note: ImageJ will open the file explorer at the *last location in which a macro was run*. If you are using this package repeatedly, this will be in the folder copied the previous time you ran the pipeline. I would suggest navigating up to near the head of your file system (e.g. "Documents"), to ensure the correct folder location is selected.
  
- - Note: This macro (and older iterations) require ImagJ 1.53e and Java 1.8.0 to run correctly. You can check your version of ImageJ/Java by opening ImageJ and right-clicking on the bottom banner:
+ - Note: This macro (and older iterations) require ImageJ 1.53e and Java 1.8.0 to run correctly. You can check your version of ImageJ/Java by opening ImageJ and right-clicking on the bottom banner:
  
  ![Figure 8: Right-clicking the bottom banner of ImageJ will provide the version of ImageJ and Java installed.](./screenshots/screenshot_20.jpg)
 
@@ -229,10 +261,10 @@ All necessary data also saved to the ouput directory, so ImageJ windows can be c
 
 To combine the FvFm data in a .csv file together with the plant area generated using the ImageJ macro, run the **"combine_data.py"** script. In Git Bash, enter the following command:
 ```
-python combine_data.py
+python combine_data_v3.py --fvfm-file <output_dir>/FvFm_output.csv --pa-dir plant_area_data/ --outpath ./
 ```
 
-- Note: The same error is outputted as for the "get_fvfm_v2.py" script. Again, this does not affect the results, and will be removed in future versions.
+- Note: The same warning is outputted as for the "get_fvfm_v3.py" script. Again, this does not affect the results, and will be removed in future versions.
 
 In the "output" folder, a file named "Combined_output.csv" should now be present. This csv file should has five columns:
 
