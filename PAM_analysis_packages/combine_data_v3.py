@@ -20,10 +20,10 @@ def main():
 
     ## Merge the data and dropped some of the columns
     merged_data = plant_area_data.merge(fvfm_data, how="inner", on=["Plate", "Well"])
-    merged_data = merged_data.drop(columns=["Count", "Average_Size", "%Area", "Mean", "Unnamed: 0"])
+    merged_data = merged_data.drop(columns=["Count", "Average Size", "%Area", "Mean", "Unnamed: 0"])
 
     # Combine ImageJ area score and FvFm score into a single value
-    merged_data["Area_FvFm"] = merged_data["Total_Area"] * merged_data["FvFm"]
+    merged_data["Area_FvFm"] = merged_data["Total Area"] * merged_data["FvFm"]
     merged_data.to_csv(f"{outpath}/combined_output.csv", index = False)
 
 def parsing_arguments():
@@ -42,7 +42,7 @@ def parsing_arguments():
     return fvfm, pa_dir, outpath
 
 def concat_plant_area_data(pa_dir, plate_names):
-    total_data = pd.DataFrame([], columns=["Plate", "Count", "Total_Area", "Average_Size", "%Area", "Mean"])
+    total_data = pd.DataFrame([], columns=["Plate", "Count", "Total Area", "Average Size", "%Area", "Mean"])
     for plate_name in plate_names:
         ## open file with the plate name
         plate_data = pd.read_csv(f"{pa_dir}/{plate_name}_threshold_image.csv")

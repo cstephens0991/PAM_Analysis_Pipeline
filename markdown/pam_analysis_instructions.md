@@ -222,16 +222,20 @@ The well coordinates were measured by Chris for 24-well plates, of the brand "XX
 5\. Now you can run the script, as specified above:
 
 ```bash 
-python get_fvfm_v3.py --xpim-dir ./input/<your_xpim_directory>/ --tif-dir ./input/<your_tif_directory>/ --outpath ./<your_output_directory>/ --well-coord ./input/24_wells_transposed.csv --coord-format auto --threshold <your_threshold>
+python get_fvfm_v3.py --xpim-dir ./input/<experiment_id_xpim>/ --tif-dir ./input/<experiment_id_tif>/ --outpath ./<experiment_id_output>/ --well-coord ./input/24_wells_transposed.csv --coord-format auto --threshold <your_threshold>
 ```
 
-5\. Once the script has finished running (message printed: ```End of script. Number of files analysed: [...]```) check the output folder:
+6\. Once the script has finished running (message printed: ```End of script. Number of files analysed: [...]```) check the output folder:
 
 ![Figure 6: Example output from "get_fvfm_v2.py" script. Note that an error message warning about future deprecation exists. This does not affect the output, and an update is currently in progress to remove this error.).](./screenshots/screenshot_19.jpg)
 
  - A file "output/FvFm_output.csv" should now be present, which contains the Y(II) values of all the .xpim files.
  - In the "threshold_output" folder there should be a series of **contrast images** for each of your plates. These will be used to generate the plant area data...
 
+```bash
+## what is in the output folder
+ls -lrth <experiment_id_output>
+```
 
 ### Step 3: Extract plant area data from "Contrast" images
 First, the ImageJ macro needs the output directories (folders) to be already created. If this is not the case, it will crash. 
@@ -239,13 +243,14 @@ First, the ImageJ macro needs the output directories (folders) to be already cre
 ```bash
 ## create the plant_area_data output directory, as well as the debug subfolder
 # mkdir = make directory. -p option enables creation of subdirectory as well
-mkdir -p plant_area_data/debug/
+mkdir -p <experiment_id>_plant_area_data/debug/
 ```
 
 Right now, the input and output directories are "hardcoded", meaning they have to be changed before running the macro. The `input` directory is the <output_dir>/threshold_output/, where `output_dir` is the one you defined in the `get_fvfm_v3.py` script (in the `--outpath` option). I made a little script that will replace this in the macro:
 
 ```bash
-python scripts/replace_inout_macro.py --input output_test --output plant_area_data --macro-in get_plant_area.txt --macro-out get_plant_area_mod.txt
+## 
+python scripts/replace_inout_macro.py --input <experiment_id_fvfm_output> --output <experiment_id>_plant_area_data --macro-in get_plant_area.txt --macro-out get_plant_area_mod.txt
 ```
 
 The file created (specified by `--macro-out`) is the one you have to be used in ImageJ. 
