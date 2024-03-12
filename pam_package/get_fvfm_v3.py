@@ -93,20 +93,23 @@ def main():
 
 def parsing_arguments():
     timestamp = time.strftime('%Y%m%d-%H%M%S')
+    # exp_id = "exp_1"
     parser = argparse.ArgumentParser(
         prog='get_fvfm_v3.py',
         description='This script is used to carry out the first stage of the PAM data analysis pipeline.')
-    parser.add_argument('--xpim-dir', default = "./input/xpim_files/",
-                        help="Path to directory containing the *.xpim files. [default = './input/xpim_files/']")
-    parser.add_argument('--tif-dir', default = "./input/tif_files/",
-                        help="Path to directory containing the *.tif files. [default = './input/tif_files/']")
-    parser.add_argument('--outpath', default=f"./output_{timestamp}/",
-                        help=f"Path to output directory which will contain results of current run. [default = './output_{timestamp}']")
-    parser.add_argument('--well-coord', default = "./input/24_wells_transposed.csv",
+    parser.add_argument('--exp-id', default = "exp_1", 
+                        help="Experiment ID that will be integrated in the folder names. [default = 'exp_1']")
+    parser.add_argument('--xpim-dir', default = "./runs/input/xpim_files/", required = True,
+                        help="Path to directory containing the *.xpim files. [default = './runs/input/xpim_files/']")
+    # parser.add_argument('--tif-dir', default = f"./runs/input/{exp_id}_tif/", required = False,
+    #                     help=f"Path to directory containing the *.tif files. [default = './runs/input/{exp_id}_tif/']")
+    # parser.add_argument('--outpath', default=f"./runs/fvfm_{exp_id}_{timestamp}/", required = False,
+    #                     help=f"Path to output directory which will contain results of current run. [default = './runs/fvfm_{exp_id}_{timestamp}']")
+    parser.add_argument('--well-coord', default = "./plate_formats/24_wells_transposed.csv",
                         help = 
                         """
                         CSV file containing the well coordinates. The columns should be the Well names (well_1, well_2 etc), and the rows contain the coordinates (x1,y1,x2,y2). 
-                        If format is imagej, specify in coord_format option. [default = './input/24_wells_transposed.csv']
+                        If format is imagej, specify in coord_format option. [default = './plate_formats/24_wells_transposed.csv']
                         """
                         )
     parser.add_argument('--coord-format', default = "auto", help = 
@@ -119,9 +122,10 @@ def parsing_arguments():
     parser.add_argument('--threshold', default = "yen", 
                         help = "Threshold to define plant material from background. Default is Yen's threshold, as defined by Yen et al 1995 (10.1109/83.366472). [default = 'yen']")
     args = vars(parser.parse_args())
+    exp_id = args["exp_id"]
     xpim_dir = os.path.abspath(args["xpim_dir"])
-    tif_dir = os.path.abspath(args["tif_dir"])
-    outpath = os.path.abspath(args["outpath"])
+    tif_dir = os.path.abspath(f"./runs/input/{exp_id}_tif/")
+    outpath = os.path.abspath(f"./runs/fvfm_{exp_id}_{timestamp}/")
     well_coord = os.path.abspath(args["well_coord"])
     coord_format = args["coord_format"]
     threshold = args["threshold"]

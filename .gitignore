@@ -3,13 +3,11 @@
 # ignore all logs
 logfiles/*
 
-# ignore output files
-PAM_analysis_packages/output_*/
-PAM_analysis_packages/*output*/
-
-## ignore input files
-PAM_analysis_packages/input/
+# ignore user files (inside runs/ directory)
+pam_package/runs
 
 # ignore debug_cropped directory
-PAM_analysis_packages/debug/
+pam_package/debug/
 
+# ignore modified get_plant_area macro
+pam_package/macros/get_plant_area_mod.txt

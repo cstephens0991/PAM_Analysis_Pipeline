@@ -24,6 +24,7 @@ def main():
 
     # Combine ImageJ area score and FvFm score into a single value
     merged_data["Area_FvFm"] = merged_data["Total Area"] * merged_data["FvFm"]
+    merged_data["FvFm_corrected"] = np.where(merged_data["Total Area"] == 0, 0, merged_data["FvFm"])
     merged_data.to_csv(f"{outpath}/combined_output.csv", index = False)
 
 def parsing_arguments():
