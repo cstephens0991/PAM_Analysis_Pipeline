@@ -90,6 +90,16 @@ pip install argparse
 
 After this, you are ready to follow the protocol in `markdown/pam_analysis_instructions.md`. 
 
+## What to do when there is an update of the package?
+Whenever, the package is updated on GitHub, you can "pull" the changes from GitHub like this:
+
+```bash
+## first go into the PAM_Analysis_Pipeline folder in git bash
+git pull origin main
+```
+
+Note that you should **NOT** store any files in folders except `pam_package/runs/` and `pam_package/debug/`. If you do, and you try to 'pull' the updates, `git` will notice there were changes in the main folder (conflicts), and will not want to update the package.
+
 ## Future changes
 - **Plant Area Data**: will be changed to run without having to open ImageJ. Everything will be able to be run from the command line.           
 - **Get FvFm**: will add option to use a "range" of thresholds          
