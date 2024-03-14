@@ -121,7 +121,7 @@ Once the script has finished running (message printed: ```End of script. Number 
 
 ```bash
 ## what is in the output folder
-ls -lrth <exp_id>_fvfm_<timestamp>
+ls -lrth fvfm_<exp_id>_<timestamp>
 ```
 
 ## Extract plant area data from "Contrast" images
@@ -130,14 +130,15 @@ First, the ImageJ macro needs the output directories (folders) to be already cre
 ```bash
 ## create the plant_area_data output directory, as well as the debug subfolder
 # mkdir = make directory. -p option enables creation of subdirectory as well
-mkdir -p <exp_id>_plant_area_data/debug/
+mkdir -p runs/plant_area_<exp_id>/debug/
 ```
 
-Right now, the input and output directories are "hardcoded", meaning they have to be changed before running the macro. The `input` directory is the <output_dir>/threshold_output/, where `output_dir` is the one you defined in the `get_fvfm_v3.py` script (in the `--outpath` option). I made a little script that will replace this in the macro:
 
+Right now, the input and output directories are "hardcoded", meaning they have to be changed before running the macro. In other words, if you use the "get_plant_area.txt" macro as is, it will look for the contrast images in a folder named "input_dir" (which doesn't exist) and try to write the output to a folder named "output_dir" (also does not exist). This little python script will replace these generic folder names with your actual names.            
+The `input` directory is the <output_dir>/threshold_output/, where `output_dir` is the one created by the `get_fvfm_v3.py` script (automatically made using your Exp_ID, and the Timestamp). 
 ```bash
 ## 
-python scripts/replace_inout_macro.py --input <exp_id_fvfm_timestamp> --output <exp_id>_plant_area_data --macro-in get_plant_area.txt --macro-out macros/get_plant_area_mod.txt
+python replace_inout_macro.py --input <fvfm_exp_id_timestamp> --output plant_area_<exp_id> --macro-in macros/get_plant_area.txt --macro-out macros/get_plant_area_mod.txt
 ```
 
 The file created (specified by `--macro-out`) is the one you have to be used in ImageJ. 
