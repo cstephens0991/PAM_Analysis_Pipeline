@@ -1,9 +1,9 @@
 path=getDirectory("Choose Directory");
 
-input = path+'\\runs\\input_dir\\threshold_output\\'
+input = path+'\\input_dir\\threshold_output\\'
 
 // Also enter the directory that you would like your results files copied to.
-output = path+'\\runs\\output_dir\\'
+output = path+'\\output_dir\\'
 
 suffix = ".tif"
 

@@ -148,7 +148,9 @@ Open ImageJ. Select "Plugins > Macros > Run... ". Then navigate to `PAM_Analysis
  - Note: An alternative ImageJ macro file exists called “Contrast_area_quant_black_plates_v2.txt”. This file is to be used for analysis of images using the black cell culture plates provided by Sarstaedt (prod. No.: 94.6000.014), as the well locations are different from standard plates.
 
 ![Figure 7: Method for running Macro files in ImageJ](./screenshots/Screenshot_10.jpg)
- 
+
+When you choose the macro, ImageJ will open a window and prompt you to **choose a folder**, which contains your data. There you just have to click on `runs`, and then `Select`, and you're good to go ! 
+
  - Note: This macro (and older iterations) require ImageJ 1.53e and Java 1.8.0 to run correctly. You can check your version of ImageJ/Java by opening ImageJ and right-clicking on the bottom banner:
  
  ![Figure 8: Right-clicking the bottom banner of ImageJ will provide the version of ImageJ and Java installed.](./screenshots/screenshot_20.jpg)
