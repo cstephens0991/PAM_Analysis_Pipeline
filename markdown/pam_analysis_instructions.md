@@ -171,7 +171,7 @@ All necessary data also saved to the ouput directory, so ImageJ windows can be c
 
 To combine the FvFm data in a .csv file together with the Plant Area generated using the ImageJ macro, run the **"combine_data.py"** script. In Git Bash, enter the following command:
 ```bash
-python combine_data_v3.py --fvfm-file runs/<exp_id>_fvfm_<timestamp>/FvFm_output.csv --pa-dir runs/<exp_id>_plant_area_data/ --outpath ./runs/<exp_id>_combined/
+python combine_data_v3.py --fvfm-file runs/fvfm_<exp_id>_<timestamp>/FvFm_output.csv --pa-dir runs/plant_area_<exp_id>/ --outpath ./runs/<exp_id>_combined/
 ```
 # check that the combine_data will create the output folder, and add option for filename. 
 
