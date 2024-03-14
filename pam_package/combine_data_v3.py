@@ -7,6 +7,9 @@ import os
 
 def main():
     fvfm, pa_dir, outpath = parsing_arguments()
+    ## if outpath does not exist, create it
+    if not os.path.exists(outpath):
+        os.makedirs(outpath)
 
     ## Read the FvFm data
     fvfm_data = pd.read_csv(f"{fvfm}")
