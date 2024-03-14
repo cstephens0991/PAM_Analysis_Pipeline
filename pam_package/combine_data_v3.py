@@ -27,6 +27,8 @@ def main():
 
     # Combine ImageJ area score and FvFm score into a single value
     merged_data["Area_FvFm"] = merged_data["Total Area"] * merged_data["FvFm"]
+    # Round the Area_FvFm to 2 decimal places
+    merged_data["Area_FvFm"] = merged_data["Area_FvFm"].round(2)
     merged_data["FvFm_corrected"] = np.where(merged_data["Total Area"] == 0, 0, merged_data["FvFm"])
     merged_data.to_csv(f"{outpath}/combined_output.csv", index = False)
 
