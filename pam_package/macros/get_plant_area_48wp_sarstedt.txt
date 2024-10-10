@@ -1,0 +1,193 @@
+path=getDirectory("Choose Directory");
+
+input = path+'\\input_dir\\threshold_output\\'
+
+// Also enter the directory that you would like your results files copied to.
+output = path+'\\output_dir\\'
+
+suffix = ".tif"
+
+// Script: //
+
+print("The following directory is used to source files: " + input)
+print("Output data is directed to the following directory: " + output)
+
+list = getFileList(input);
+
+for (i = 0; i < lengthOf(list); i++) {
+	target_file = input + list[i]; // "File.separator + " no longer required
+	if (File.isDirectory(target_file)) {
+		print("directory detected: " + list[i]);
+		continue;
+	} else {
+			name = list[i];
+			if (endsWith(name, suffix)) { 
+				name = name.replace(suffix, "");
+				print("Image analysed: " + name);
+
+				open(target_file);
+				run("8-bit");
+				// Changes from v0: updated script to match changes between ImageJ 1.53e and 1.54.
+				setThreshold(100, 255, "raw");
+				setOption("BlackBackground", false);
+				run("Convert to Mask");
+
+
+				// Well positions were determined manually and then edited to be made regular size and shape.
+				makeOval(130, 137, 38, 34);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(175, 132, 40, 39);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(225, 135, 36, 36);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(269, 133, 40, 42);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(317, 131, 41, 42);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(360, 132, 43, 43);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(409, 133, 42, 40);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(455, 132, 42, 40);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(127, 179, 42, 38);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(174, 178, 43, 42);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(221, 179, 42, 41);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(269, 180, 41, 43);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(315, 184, 39, 39);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(363, 181, 42, 43);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(409, 181, 42, 39);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(456, 182, 41, 38);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(126, 226, 43, 37);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(173, 225, 42, 39);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(221, 226, 42, 37);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(265, 227, 45, 38);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(313, 227, 44, 37);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(361, 227, 41, 38);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(409, 229, 41, 38);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(455, 228, 42, 37);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(131, 272, 39, 39);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(172, 272, 43, 39);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(222, 274, 42, 40);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(268, 275, 43, 42);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(315, 274, 42, 37);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(361, 273, 44, 40);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(411, 273, 40, 38);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(457, 277, 40, 38);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(128, 319, 40, 40);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(176, 320, 41, 39);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(222, 320, 41, 39);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(268, 319, 40, 40);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(314, 320, 43, 39);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(364, 322, 39, 38);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(410, 320, 40, 39);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(456, 319, 41, 40);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(126, 365, 42, 40);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(174, 366, 41, 41);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(219, 363, 44, 45);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(270, 365, 43, 43);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(316, 367, 39, 39);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(359, 365, 46, 44);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(408, 367, 43, 42);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				makeOval(456, 368, 42, 41);
+				run("Analyze Particles...", "display clear summarize add");
+				run("Add Selection...", "stroke=yellow width=2");
+				// Final particle analysis data is saved as "Summary.csv" in the following folder.
+				data_save = output+name+".csv";
+				image_save = output+"\\debug\\"+name+".jpg";
+				saveAs("Results", data_save);
+				saveAs("Jpeg", image_save);
+				close();
+			} else {
+				print("non-image file detected: " + list[i]);
+				continue;
+			}
+		}
+	}
+macro "Close All Windows"
