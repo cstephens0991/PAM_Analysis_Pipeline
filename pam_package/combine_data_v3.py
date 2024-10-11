@@ -25,12 +25,14 @@ def main():
     merged_data = plant_area_data.merge(fvfm_data, how="inner", on=["Plate", "Well"])
     merged_data = merged_data.drop(columns=["Count", "Average Size", "%Area", "Mean", "Unnamed: 0"])
 
+    # Create a FvFm_corrected, which is 0 when Total Area is 0 (dead plant)
+    merged_data["FvFm_corrected"] = np.where(merged_data["Total Area"] == 0, 0, merged_data["FvFm"])
+    
     # Combine ImageJ area score and FvFm score into a single value
-    merged_data["Area_FvFm"] = merged_data["Total Area"] * merged_data["FvFm"]
+    merged_data["Area_FvFm"] = merged_data["Total Area"] * merged_data["FvFm_corrected"]
     # Round the Area_FvFm to 2 decimal places
     decimals = 2    
     merged_data["Area_FvFm"] = merged_data["Area_FvFm"].apply(lambda x: round(x, decimals))
-    merged_data["FvFm_corrected"] = np.where(merged_data["Total Area"] == 0, 0, merged_data["FvFm"])
     merged_data.to_csv(f"{outpath}/combined_output.csv", index = False)
 
 def parsing_arguments():
