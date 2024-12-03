@@ -18,7 +18,7 @@ import pandas as pd
 import argparse
 import time
 import subprocess
-import cv2 as cv2
+import opencv as cv2
 
 # Import functions for FvFm analysis (extract FvFm), tif_stack to single frames, converting imageJ_coord to plantcv, and check if coord are imageJ format or not.
 # from scripts.check_coord_format import is_imageJ, convert2plantcv
